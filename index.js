@@ -8,27 +8,36 @@
 */
 const Portis = require('@portis/web3');
 
-function PortisModule(dappId, config) {
+function PortisModule({dappId, config, forceFallbackUrl}) {
     this.dappId = dappId;
     this.config = config;
+    this.forceFallbackUrl = forceFallbackUrl;
+    this.id = 'portis';
 }
 
-PortisModule.prototype.use = function({chainId, fallbackUrl}) {
-    let network = 'mainnet';
-    if(chainId == 1) {
-        network = 'mainnet';
+PortisModule.prototype.setup = function({chainId, fallbackUrl}) {
+    let network;
+    if (!this.forceFallbackUrl) {
+        if(chainId == 1) {
+            network = 'mainnet';
+        } // TODO
     }
+    
     if (!network && fallbackUrl) {
         network = {
             nodeUrl: fallbackUrl,
             chainId,
         };
+        console.log('PORTIS', network);
     }
     if (!network) {
         throw new Error('chain ' + chainId + ' not supported by portis');
     }
     this.portis = new Portis(this.dappId, network, this.config);
-    return this.portis.provider;
+    return {
+        web3Provider: this.portis.provider,
+        chainId
+    };
 }
 
 PortisModule.prototype.logout = async function() {
@@ -37,6 +46,12 @@ PortisModule.prototype.logout = async function() {
 
 PortisModule.prototype.isLoggedIn = async function() {
     return this.portis.isLoggedIn();
+}
+
+PortisModule.prototype.onAccountsChanged = function(f) { // TODO ability remove listener ?
+    this.portis.onActiveWalletChanged((newAddress) => {
+        f([newAddress]);
+    });
 }
 
 // TODO onError / onLogin / onLogout
