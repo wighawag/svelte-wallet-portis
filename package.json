@@ -1,0 +1,12 @@
+{
+  "name": "svelte-wallet-portis",
+  "version": "0.1.0",
+  "description": "portis module for svelte-wallet",
+  "main": "index.js",
+  "repository": "git@github.com:wighawag/svelte-wallet-portis.git",
+  "author": "Wighawag <wighawag@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@portis/web3": "^2.0.0-beta.49"
+  }
+}
