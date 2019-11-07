@@ -34,6 +34,7 @@ PortisModule.prototype.setup = function({chainId, fallbackUrl}) {
         throw new Error('chain ' + chainId + ' not supported by portis');
     }
     this.portis = new Portis(this.dappId, network, this.config);
+    window.portis = this.portis;
     return {
         web3Provider: this.portis.provider,
         chainId
