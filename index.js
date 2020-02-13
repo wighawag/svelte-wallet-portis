@@ -15,7 +15,7 @@ function PortisModule({dappId, config, forceFallbackUrl}) {
     this.id = 'portis';
 }
 
-PortisModule.prototype.setup = function({chainId, fallbackUrl}) {
+PortisModule.prototype.setup = async function({chainId, fallbackUrl}) {
     let network;
     if (!this.forceFallbackUrl) {
         if(chainId == 1) {
@@ -28,13 +28,26 @@ PortisModule.prototype.setup = function({chainId, fallbackUrl}) {
             nodeUrl: fallbackUrl,
             chainId,
         };
-        console.log('PORTIS', network);
+        console.log('PORTIS with ' + network.nodeUrl + ' ' + chainId);
     }
     if (!network) {
         throw new Error('chain ' + chainId + ' not supported by portis');
     }
     this.portis = new Portis(this.dappId, network, this.config);
     window.portis = this.portis;
+    this.portis.onError((error) => {
+        console.error('PORTIS ERROR:');
+        console.error(error);
+    });
+    this.portis.onActiveWalletChanged((walletAddress) => {
+        console.log('PORTIS address: ' + walletAddress);
+    });
+    this.portis.onLogout(() => {
+        console.log('PORTIS logout ');
+    });
+    this.portis.onLogin((walletAddress, email, reputation) => {
+        console.log('PORTIS login: ' + walletAddress + ',' + email);
+    });
     return {
         web3Provider: this.portis.provider,
         chainId

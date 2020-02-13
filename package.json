@@ -1,6 +1,6 @@
 {
   "name": "svelte-wallet-portis",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "portis module for svelte-wallet",
   "main": "index.js",
   "repository": "git@github.com:wighawag/svelte-wallet-portis.git",
