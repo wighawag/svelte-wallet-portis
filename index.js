@@ -15,23 +15,44 @@ function PortisModule({dappId, config, forceFallbackUrl}) {
     this.id = 'portis';
 }
 
+const knownChainIds = {
+    '0x01': 'mainnet',
+    '0x03': 'ropsten',
+    '0x04': 'rinkeby',
+    '0x05': 'goerli',
+    '0x08': 'ubiq',
+    '0x12': 'thundercoreTestnet',
+    // TODO chainId '0x': 'orchid',
+    // TODO chainId '0x': 'orchidTestnet',
+    '0x2a': 'kovan',
+    '0x3d': 'classic',
+    '0x4d': 'sokol',
+    '0x63': 'core',
+    '0x64': 'xdai',
+    '0x6c': 'thundercore',
+    // TODO chainId '0x': 'fuse',
+    '0xa3': 'lightstreams',
+    // TODO chainId '0x': 'maticAlpha',
+    // TODO chainId '0x': 'maticTestnet' // is that testnet3 ?
+}
+
 PortisModule.prototype.setup = async function({chainId, fallbackUrl}) {
     let network;
     if (!this.forceFallbackUrl) {
-        if(chainId == 1) {
-            network = 'mainnet';
-        } // TODO
+        network = knownChainIds[chainId];
     }
+
+    const portisChainId = parseInt(chainId.slice(2), 16);
     
     if (!network && fallbackUrl) {
         network = {
             nodeUrl: fallbackUrl,
-            chainId,
+            chainId: portisChainId,
         };
         console.log('PORTIS with ' + network.nodeUrl + ' ' + chainId);
     }
     if (!network) {
-        throw new Error('chain ' + chainId + ' not supported by portis');
+        throw new Error('chain ' + portisChainId + ' (' + chainId  + ') not supported by portis');
     }
     this.portis = new Portis(this.dappId, network, this.config);
     window.portis = this.portis;
